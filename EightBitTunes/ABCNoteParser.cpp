@@ -40,11 +40,9 @@ int frequencies[] = {
   23679.6, 25087.7, 26579.5, 28160,   29834.5, 31608.5
 };
 
-/*
-TODO: Implement key signatures
 // Accidentals for each standard key signatures
 int keySignatures[][7] = {
-  // C D E  F  G  A  B
+// C  D  E  F  G  A  B
   {1, 1, 1, 1, 1, 1, 1}, // 7 sharps - C#
   {1, 1, 1, 1, 1, 1, 0}, // 6 sharps - F#
   {1, 1, 0, 1, 1, 1, 0}, // 5 sharps - B
@@ -61,7 +59,6 @@ int keySignatures[][7] = {
   {-1, -1, 0, -1, -1, -1, -1}, // 6 flats - Gb
   {-1, -1, -1, -1, -1, -1, -1} // 7 flats - Cb
 };
-*/
 
 ABCNoteParser::ABCNoteParser() {
   reset();
@@ -93,29 +90,48 @@ void ABCNoteParser::getNextNote(Stream* stream, int* freq, int* dur) {
       skipCharactersUntil(stream, &inputChar, "+");
     }
 
-    // If we are in a 'header section'
+    // 3 - Information fields
+    // Any line beginning with a letter in the range A-Z or a-z and
+    // immediately followed by a colon (:) is an information field.
     switch (inputChar) {
       // Ignore all unsupported header lines
-      case 'H':
-      case 'I':
-      case 'J':
-      case 'N':
-      case 'O':
-      case 'P':
-      case 'R':
-      case 'S':
-      case 'T':
-      case 'U':
-      case 'V':
-      case 'W':
-      case 'X':
-      case 'Y':
-      case 'Z':
+      //case 'A': // 3.1.5 - area
+      //case 'B': // 3.1.16 - book
+      //case 'C': // 3.3.3 - composer
+      //case 'D': // 3.1.16 - discography
+      //case 'E': // unused
+      //case 'F': // 3.1.16 - file url
+      //case 'G': // 3.1.12 - group
+      case 'H': // 3.1.13 - history
+      case 'I': // 3.1.17 - instruction
+      case 'J': // unused
+      //case 'K': // 3.1.14 - key
+      //case 'L': // 3.1.7 - unit note length
+      //case 'M': // 3.1.6 - meter
+      //case 'm': // 3.1.18 - macro
+      case 'N': // 3.1.11 - notes
+      case 'O': // 3.1.4 - origin
+      case 'P': // 3.1.9 - parts
+      //case 'Q': // 3.1.8 - tempo
+      case 'R': // 3.1.15 - rhythm
+      //case 'r': // 3.1.18 - remark
+      case 'S': // 3.1.16 - source
+      //case 's': // 3.1.18 - symbol line
+      case 'T': // 3.2.2 - tune title
+      case 'U': // 3.1.18 - user defined
+      case 'V': // 3.1.18 - voice
+      case 'W': // 3.1.18 - words
+      //case 'w': // 3.1.18 - words
+      case 'X': // 3.1.1 - reference number
+      case 'Y': // unused
+      case 'Z': // 3.1.10 - transcription
       case '%':
         skipCharactersUntil(stream, &inputChar, "\n");
         break;
 
-      case 'K': // Key, also marks the end of the header
+      // Key
+      // also marks the end of the header
+      case 'K':
         Serial.println(F("Handling header: K - Key"));
         // Currently only supports default Key C major
         // Marks the end of the official header, so scroll forward til endline
@@ -151,7 +167,7 @@ void ABCNoteParser::getNextNote(Stream* stream, int* freq, int* dur) {
         defaultNoteDuration = delayTimeInMilliseconds(defaultNoteLength, beatsPerMinute);
         break;
 
-      case 'Q':  // Tempo
+      case 'Q': // Tempo
         Serial.println(F("Handling header: Q - Tempo"));
         // Remove the expected ':' character
         inputChar = stream->read();
@@ -181,7 +197,7 @@ void ABCNoteParser::getNextNote(Stream* stream, int* freq, int* dur) {
         Serial.println(F("Finished handling header: Q - Tempo"));
         break;
 
-      case 'L':  // Default Note Length
+      case 'L': // Default Note Length
         Serial.println(F("Handling header: L - Note Length"));
         // Remove the expected ':' character
         inputChar = stream->read();
