@@ -44,22 +44,22 @@ int frequencies[] = {
 TODO: Implement key signatures
 // Accidentals for each standard key signatures
 int keySignatures[][7] = {
-//C  D  E  F  G  A  B
- {1, 1, 1, 1, 1, 1, 1}, // 7 sharps - C#
- {1, 1, 1, 1, 1, 1, 0}, // 6 sharps - F#
- {1, 1, 0, 1, 1, 1, 0}, // 5 sharps - B
- {1, 1, 0, 1, 1, 0, 0}, // 4 sharps - E
- {1, 0, 0, 1, 1, 0, 0}, // 3 sharps - A
- {1, 0, 0, 1, 0, 0, 0}, // 2 sharps - D
- {0, 0, 0, 1, 0, 0, 0}, // 1 sharp - G
- {0, 0, 0, 0, 0, 0, 0}, // 0 sharps/flats - C
- {0, 0, 0, 0, 0, 0, -1}, // 1 flat - F
- {0, 0, 0, -1, 0, 0, -1}, // 2 flats - Bb
- {0, 0, 0, -1, 0, -1, -1}, // 3 flats - Eb
- {0, -1, 0, -1, 0, -1, -1}, // 4 flats - Ab
- {0, -1, 0, -1, -1, -1, -1}, // 5 flats - Db
- {-1, -1, 0, -1, -1, -1, -1}, // 6 flats - Gb
- {-1, -1, -1, -1, -1, -1, -1} // 7 flats - Cb
+  // C D E  F  G  A  B
+  {1, 1, 1, 1, 1, 1, 1}, // 7 sharps - C#
+  {1, 1, 1, 1, 1, 1, 0}, // 6 sharps - F#
+  {1, 1, 0, 1, 1, 1, 0}, // 5 sharps - B
+  {1, 1, 0, 1, 1, 0, 0}, // 4 sharps - E
+  {1, 0, 0, 1, 1, 0, 0}, // 3 sharps - A
+  {1, 0, 0, 1, 0, 0, 0}, // 2 sharps - D
+  {0, 0, 0, 1, 0, 0, 0}, // 1 sharp - G
+  {0, 0, 0, 0, 0, 0, 0}, // 0 sharps/flats - C
+  {0, 0, 0, 0, 0, 0, -1}, // 1 flat - F
+  {0, 0, 0, -1, 0, 0, -1}, // 2 flats - Bb
+  {0, 0, 0, -1, 0, -1, -1}, // 3 flats - Eb
+  {0, -1, 0, -1, 0, -1, -1}, // 4 flats - Ab
+  {0, -1, 0, -1, -1, -1, -1}, // 5 flats - Db
+  {-1, -1, 0, -1, -1, -1, -1}, // 6 flats - Gb
+  {-1, -1, -1, -1, -1, -1, -1} // 7 flats - Cb
 };
 */
 
@@ -92,7 +92,7 @@ void ABCNoteParser::getNextNote(Stream* stream, int* freq, int* dur) {
       inputChar = stream->read();
       skipCharactersUntil(stream, &inputChar, "+");
     }
-    
+
     // If we are in a 'header section'
     switch (inputChar) {
       // Ignore all unsupported header lines
@@ -114,13 +114,13 @@ void ABCNoteParser::getNextNote(Stream* stream, int* freq, int* dur) {
       case '%':
         skipCharactersUntil(stream, &inputChar, "\n");
         break;
-        
-      case 'K':  // Key, also marks the end of the header
+
+      case 'K': // Key, also marks the end of the header
         Serial.println(F("Handling header: K - Key"));
         // Currently only supports default Key C major
         // Marks the end of the official header, so scroll forward til endline
         skipCharactersUntil(stream, &inputChar, "\n]");
-        
+
         Serial.println(F("Final Settings: "));
         Serial.print(F("Meter: "));
         Serial.println(meterValue);
@@ -131,26 +131,26 @@ void ABCNoteParser::getNextNote(Stream* stream, int* freq, int* dur) {
         Serial.print(F("Note Duration: "));
         Serial.println(defaultNoteDuration);
         Serial.println(F("Finished handling header: K - Key"));
-        
+
         break;
-      
-      case 'M':  // Meter
+
+      case 'M': // Meter
         Serial.println(F("Handling header: M - Meter"));
         // Remove the expected ':' character
         inputChar = stream->read();
         skipCharacters(stream, &inputChar, ": ");
         // Get the value for the meter from the fractional form (ex: 4/4 or 6/8)
-        meterValue = (float)getIntegerFromStream(stream, &inputChar);
+        meterValue = (float) getIntegerFromStream(stream, &inputChar);
         if (inputChar == '/') {
           inputChar = stream->read(); // Move past the '/'
-          meterValue /= (float)getIntegerFromStream(stream, &inputChar);
+          meterValue /= (float) getIntegerFromStream(stream, &inputChar);
         }
         // Calculate the default note length based on the Meter
         defaultNoteLength = meterValue < 0.75f ? 0.0625f : 0.125f;
         // Calculate the default note duration based off of our (potentially new) note length
         defaultNoteDuration = delayTimeInMilliseconds(defaultNoteLength, beatsPerMinute);
         break;
-      
+
       case 'Q':  // Tempo
         Serial.println(F("Handling header: Q - Tempo"));
         // Remove the expected ':' character
@@ -163,7 +163,7 @@ void ABCNoteParser::getNextNote(Stream* stream, int* freq, int* dur) {
         // based on this assumption
         if (inputChar == '/') {
           inputChar = stream->read();
-          double tempoNoteLength = (double)defaultNoteDuration / (double)getIntegerFromStream(stream, &inputChar);
+          double tempoNoteLength = (double) defaultNoteDuration / (double) getIntegerFromStream(stream, &inputChar);
           // Bypass the filler characters
           while (inputChar != '=') inputChar = stream->read();
           inputChar = stream->read();
@@ -180,39 +180,39 @@ void ABCNoteParser::getNextNote(Stream* stream, int* freq, int* dur) {
         }
         Serial.println(F("Finished handling header: Q - Tempo"));
         break;
-      
+
       case 'L':  // Default Note Length
         Serial.println(F("Handling header: L - Note Length"));
         // Remove the expected ':' character
         inputChar = stream->read();
         skipCharacters(stream, &inputChar, ": ");
         // Get the value for the length from the fractional form (ex: 4/4)
-        defaultNoteLength = (float)getIntegerFromStream(stream, &inputChar);
+        defaultNoteLength = (float) getIntegerFromStream(stream, &inputChar);
         if (inputChar == '/') {
           inputChar = stream->read();
-          defaultNoteLength /= (float)getIntegerFromStream(stream, &inputChar);
+          defaultNoteLength /= (float) getIntegerFromStream(stream, &inputChar);
         }
         // Calculate the default note duration based off of our (potentially new) note length
         defaultNoteDuration = delayTimeInMilliseconds(defaultNoteLength, beatsPerMinute);
         break;
-        
+
       case '[':
         inBrackets = true;
         inputChar = stream->read();
         break;
-        
+
       case '|':
         // Some combinations of brackets [] actually have aesthetic meanings in ABC Notation
         // Once such combo is [| which we don't want to be seen as chord brackets []
         inBrackets = false;
         inputChar = str->read();
         break;
-        
+
       case ']':
         inBrackets = false;
         inputChar = str->read();
         break;
-      
+
       default:
         // If not a header, treat it as a note
         *freq = getFrequency(str, &inputChar);
@@ -224,12 +224,12 @@ void ABCNoteParser::getNextNote(Stream* stream, int* freq, int* dur) {
         }
         // Otherwise continue to get the duration next
         *dur = getDuration(str, &inputChar);
-        
+
         // If we are in a set of brackets, that means the music wants to
         // play multiple notes at once, which the Arduino piezo does not support
         // So we must escape all remaining notes until the end bracket
         if (inBrackets) skipCharactersUntil(str, &inputChar, "]");
-        
+
         // Make sure to return once we have our next valid note
         return;
     }
@@ -252,15 +252,15 @@ double ABCNoteParser::delayTimeInMilliseconds(double noteLength, float bpm) {
 int ABCNoteParser::getDuration(Stream* stream, char* input) {
   // Start off with the default duration
   int duration = defaultNoteDuration;
-  
+
   // First see if we can find a multiplier (no preceding chars, just digits)
   int modifier = getIntegerFromStream(stream, input);
-  
+
   if (modifier > 0) {
     // If there was a digit, then it means we multiply our current duration by that number
     duration *= modifier;
   }
-  
+
   while (*input == '/') {
     // If a / is found, it means we divide our duration by the next number
     // If no number is provided, the default is /2
@@ -269,48 +269,52 @@ int ABCNoteParser::getDuration(Stream* stream, char* input) {
     else duration /= 2;
     *input = stream->read();
   }
-  
+
   while (*input == '>') {
     // A > (aka a hornpipe) represents a 'dotted' note
     // (therefore adds half its current duration to itself)
     duration += duration/2;
     *input = stream->read();
   }
-  
+
   return duration;
 }
 
 int ABCNoteParser::getFrequency(Stream* stream, char* input) {
   // Setup some note-specific defaults first
-  int transposeSteps = 0;
+  boolean hasAccidentals = false;
+  int accidentals = 0;
   int octave = 4;
   int noteStep = -1;
-  
+
   // Get the accidental modifier(s)
   while ("^=_".indexOf(*input) != -1) {
-    if (*input == '^') transposeSteps++;
-    else if (*input == '=') transposeSteps = 0;
-    else if (*input == '_') transposeSteps--;
+    hasAccidentals = true;
+    if (*input == '^') accidentals++;
+    else if (*input == '_') accidentals--;
     *input = stream->read();
   }
 
-  if (*input == 'z') {
-    // If z (rest), return frequency of 0
-    return 0;
+  // If z (rest), return frequency of 0
+  if (*input == 'z') return 0;
+
+  // TODO
+  if (hasAccidentals) {
+    // remove accidentals from key signature
   }
-  
-  char noteName = toupper(*input); // NOTE: not sure if this is the correct pointer use
+
   // If lowercase, set up an octave
+  char noteName = toupper(*input); // NOTE: not sure if this is the correct pointer use
   if (noteName != *input) octave++;
-  
+
   // Get the half steps relative to C
   noteStep = getNaturalSteps(noteName);
-  
+
   // If, for whatever reason, we still don't have a note, exit with a failure
   if (noteStep == -1) return -1;
-  
+
   *input = stream->read();
-  
+
   // Get the octave modifier (optional)
   if (*input == '\'') {
     // Apostrophe ' puts the note up an octave
@@ -324,7 +328,7 @@ int ABCNoteParser::getFrequency(Stream* stream, char* input) {
   }
 
   // Take our note frequency info and get the actual frequency
-  return frequencies[12 * octave + noteStep + transposeSteps];
+  return frequencies[12 * octave + noteStep + accidentals];
 }
 
 int ABCNoteParser::getNaturalSteps(char* note) {
