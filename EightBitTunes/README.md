@@ -9,8 +9,8 @@ Many more songs can be found outside of this website, just google phrases such a
 This library does not fully support ABC Notation, it only supports what is needed from the notation to play a basic (one note at a time) 8bit song.<br>
 
 To be more specific, this library currently supports:<br>
-- Four continuous octaves (starting at the octave below Middle C)<br>
-- Flats, Sharps, Normalized Notes (no doubles) (examples: ^A is A sharp, _A is A flat, =A is normal A)<br>
+- Eleven continuous octaves (from C0 to B10)<br>
+- Any combination of flats, sharps, and naturals (examples: ^A is A sharp, _A is A flat, =A is normal A)<br>
 - Modifying note durations (examples: A2 is the A note for twice the default duration, A/2 and A/ are half default duration, A3/4 is 75% of default duration)<br>
 - The following header fields (both in the header and in mid-tune when surrounded by [] tags) : <br>
         - M - Meter (default: 4/4)<br>
@@ -21,7 +21,6 @@ This library IGNORES:<br>
 - The K - Key Header, currently this library defaults to C Major Key<br>
 - Repeat symbols ( :| )<br>
 - Any stemmed notes, except for the first note in the bracketed stem (ex: in the simple stem [ABC], only A would play, B and C would be ignored)<br>
-- Doubled up flats/sharps, these will default to single flats/sharps respectively (ex: ^^A will be interpretted as ^A)<br>
 - Anything inside double quotes (")<br>
 - Any whitespace or decorative characters (such as bars |, parenthesis (), newlines, etc)<br>
 

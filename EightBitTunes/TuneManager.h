@@ -6,7 +6,7 @@
 
 // HARDWARE CONSTANTS
 // pin of speaker/pezo
-static const int PIN_PEZO = 8;
+static const int PIN_PIEZO = 8;
 static const int PIN_CS = 4;
 static const int PIN_HARDWARE_SS = 10;
 

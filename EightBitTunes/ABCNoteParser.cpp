@@ -41,7 +41,7 @@ int frequencies[] = {
 };
 
 // Accidentals for each standard key signatures
-int keySignatures[][7] = {
+/*int keySignatures[][7] = {
 // C  D  E  F  G  A  B
   {1, 1, 1, 1, 1, 1, 1}, // 7 sharps - C#
   {1, 1, 1, 1, 1, 1, 0}, // 6 sharps - F#
@@ -58,7 +58,7 @@ int keySignatures[][7] = {
   {0, -1, 0, -1, -1, -1, -1}, // 5 flats - Db
   {-1, -1, 0, -1, -1, -1, -1}, // 6 flats - Gb
   {-1, -1, -1, -1, -1, -1, -1} // 7 flats - Cb
-};
+};*/
 
 ABCNoteParser::ABCNoteParser() {
   reset();

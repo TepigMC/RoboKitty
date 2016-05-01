@@ -15,6 +15,7 @@ class ABCNoteParser {
     double delayTimeInMilliseconds(double noteLength, float bpm);
     int getFrequency(Stream* stream, char* input);
     int getDuration(Stream* stream, char* input);
+    int getNaturalSteps(char* note);
 };
 
 #endif
