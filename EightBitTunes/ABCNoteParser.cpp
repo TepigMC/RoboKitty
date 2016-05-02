@@ -221,17 +221,17 @@ void ABCNoteParser::getNextNote(Stream* stream, int* freq, int* dur) {
         // Some combinations of brackets [] actually have aesthetic meanings in ABC Notation
         // Once such combo is [| which we don't want to be seen as chord brackets []
         inBrackets = false;
-        inputChar = str->read();
+        inputChar = stream->read();
         break;
 
       case ']':
         inBrackets = false;
-        inputChar = str->read();
+        inputChar = stream->read();
         break;
 
       default:
         // If not a header, treat it as a note
-        *freq = getFrequency(str, &inputChar);
+        *freq = getFrequency(stream, &inputChar);
         // If we didn't successfully get a note, 
         // reset our char and exit this loop's iteration
         if (*freq == -1) {
@@ -239,12 +239,12 @@ void ABCNoteParser::getNextNote(Stream* stream, int* freq, int* dur) {
           continue;
         }
         // Otherwise continue to get the duration next
-        *dur = getDuration(str, &inputChar);
+        *dur = getDuration(stream, &inputChar);
 
         // If we are in a set of brackets, that means the music wants to
         // play multiple notes at once, which the Arduino piezo does not support
         // So we must escape all remaining notes until the end bracket
-        if (inBrackets) skipCharactersUntil(str, &inputChar, "]");
+        if (inBrackets) skipCharactersUntil(stream, &inputChar, "]");
 
         // Make sure to return once we have our next valid note
         return;
@@ -304,7 +304,7 @@ int ABCNoteParser::getFrequency(Stream* stream, char* input) {
   int noteStep = -1;
 
   // Get the accidental modifier(s)
-  while ("^=_".indexOf(*input) != -1) {
+  while (strchr("^=_", *input)) {
     hasAccidentals = true;
     if (*input == '^') accidentals++;
     else if (*input == '_') accidentals--;
@@ -347,8 +347,8 @@ int ABCNoteParser::getFrequency(Stream* stream, char* input) {
   return frequencies[12 * octave + noteStep + accidentals];
 }
 
-int ABCNoteParser::getNaturalSteps(char* note) {
-  switch (*note) {
+int ABCNoteParser::getNaturalSteps(char note) {
+  switch (note) {
     case 'C': return 0;
     case 'D': return 2;
     case 'E': return 4;
